@@ -1,4 +1,4 @@
-# WildFly Docker image
+# WildFly Docker image for arm64v8 architecture
 
 This is an example Dockerfile with [WildFly application server](http://wildfly.org/).
 
