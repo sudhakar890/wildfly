@@ -1,12 +1,31 @@
-# Use latest jboss/base-jdk:11 image as the base
-FROM jboss/base-jdk:11
+FROM arm64v8/centos:7
+
+# Install packages necessary to run EAP
+RUN yum update -y && yum -y install xmlstarlet saxon augeas bsdtar unzip && yum clean all
+
+# Create a user and group used to launch processes
+# The user ID 1000 is the default for the first "regular" user on Fedora/RHEL,
+# so there is a high chance that this ID will be equal to the current user
+# making it easier to use volumes (no permission issues)
+RUN groupadd -r jboss -g 1000 && useradd -u 1000 -r -g jboss -m -d /opt/jboss -s /sbin/nologin -c "JBoss user" jboss && \
+    chmod 755 /opt/jboss
+
+# Set the working directory to jboss' user home directory
+WORKDIR /opt/jboss
+
+# User root user to install software
+USER root
+
+# Install necessary packages
+RUN yum -y install java-11-openjdk-devel && yum clean all
+
+# Set the JAVA_HOME variable to make it clear where Java is located
+ENV JAVA_HOME /usr/lib/jvm/java
 
 # Set the WILDFLY_VERSION env variable
 ENV WILDFLY_VERSION 17.0.0.Final
 ENV WILDFLY_SHA1 50bf8c48d4faf27c530af6949a225b9f1428300e
 ENV JBOSS_HOME /opt/jboss/wildfly
-
-USER root
 
 # Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
 # Make sure the distribution is available from a well-known place
