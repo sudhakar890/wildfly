@@ -1,4 +1,4 @@
-FROM arm64v8/centos:7
+FROM project31/aarch64-centos:7
 
 # Install packages necessary to run EAP
 RUN yum update -y && yum -y install xmlstarlet saxon augeas bsdtar unzip && yum clean all
